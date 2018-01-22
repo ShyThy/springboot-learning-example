@@ -8,36 +8,40 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
+/**
+ * @Author: thy
+ * @Date: Created in 2018/1/22 14:18
+ * @Modified By:
+ */
 @Configuration
-// 扫描 Mapper 接口并容器管理
-@MapperScan(basePackages = ClusterDataSourceConfig.PACKAGE, sqlSessionFactoryRef = "clusterSqlSessionFactory")
-public class ClusterDataSourceConfig {
-
+@MapperScan(basePackages = ThirdDataSourceConfig.PACKAGE, sqlSessionFactoryRef = "thirdSqlSessionFactory")
+public class ThirdDataSourceConfig {
     // 精确到 cluster 目录，以便跟其他数据源隔离
-    static final String PACKAGE = "org.spring.springboot.dao.cluster";
-    static final String MAPPER_LOCATION = "classpath:mapper/cluster/*.xml";
+    static final String PACKAGE = "org.spring.springboot.dao.third";
+    static final String MAPPER_LOCATION = "classpath:mapper/third/*.xml";
 
-    @Value("${cluster.datasource.url}")
+
+    @Value("${third.datasource.url}")
     private String url;
 
-    @Value("${cluster.datasource.username}")
+    @Value("${third.datasource.username}")
     private String user;
 
-    @Value("${cluster.datasource.password}")
+    @Value("${third.datasource.password}")
     private String password;
 
-    @Value("${cluster.datasource.driverClassName}")
+    @Value("${third.datasource.driverClassName}")
     private String driverClass;
 
-    @Bean(name = "clusterDataSource")
-    public DataSource clusterDataSource() {
-        System.err.println("cluster datasource !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+    @Bean(name = "thirdDataSource")
+    public DataSource thirdDataSource() {
+        System.err.println("third datasource !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driverClass);
         dataSource.setUrl(url);
@@ -46,18 +50,19 @@ public class ClusterDataSourceConfig {
         return dataSource;
     }
 
-    @Bean(name = "clusterTransactionManager")
-    public DataSourceTransactionManager clusterTransactionManager() {
-        return new DataSourceTransactionManager(clusterDataSource());
+    @Bean(name = "thirdTransactionManager")
+    public DataSourceTransactionManager thirdTransactionManager() {
+        return new DataSourceTransactionManager(thirdDataSource());
     }
 
-    @Bean(name = "clusterSqlSessionFactory")
-    public SqlSessionFactory clusterSqlSessionFactory(@Qualifier("clusterDataSource") DataSource clusterDataSource)
+
+    @Bean(name = "thirdSqlSessionFactory")
+    public SqlSessionFactory thirdSqlSessionFactory(@Qualifier("thirdDataSource") DataSource thirdDataSource)
             throws Exception {
         final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-        sessionFactory.setDataSource(clusterDataSource);
+        sessionFactory.setDataSource(thirdDataSource);
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
-                .getResources(ClusterDataSourceConfig.MAPPER_LOCATION));
+                .getResources(ThirdDataSourceConfig.MAPPER_LOCATION));
         return sessionFactory.getObject();
     }
 }

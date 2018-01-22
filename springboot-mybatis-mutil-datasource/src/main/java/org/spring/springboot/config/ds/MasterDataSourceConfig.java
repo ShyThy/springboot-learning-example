@@ -18,11 +18,13 @@ import javax.sql.DataSource;
 @Configuration
 // 扫描 Mapper 接口并容器管理
 @MapperScan(basePackages = MasterDataSourceConfig.PACKAGE, sqlSessionFactoryRef = "masterSqlSessionFactory")
+//@MapperScan(basePackages = "org.spring.springboot.dao", sqlSessionFactoryRef = "masterSqlSessionFactory")
 public class MasterDataSourceConfig {
 
     // 精确到 master 目录，以便跟其他数据源隔离
     static final String PACKAGE = "org.spring.springboot.dao.master";
     static final String MAPPER_LOCATION = "classpath:mapper/master/*.xml";
+//    static final String MAPPER_LOCATION = "classpath:mapper/**/*.xml";
 
     @Value("${master.datasource.url}")
     private String url;
@@ -39,6 +41,7 @@ public class MasterDataSourceConfig {
     @Bean(name = "masterDataSource")
     @Primary
     public DataSource masterDataSource() {
+        System.err.println("master datasource !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driverClass);
         dataSource.setUrl(url);
